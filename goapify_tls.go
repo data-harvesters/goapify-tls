@@ -1,8 +1,6 @@
 package goapifytls
 
 import (
-	"errors"
-
 	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/bogdanfinn/tls-client/profiles"
 	"github.com/data-harvesters/goapify"
@@ -33,20 +31,21 @@ func DefaultOptions() []tls_client.HttpClientOption {
 	}
 }
 
-func (t *TlsClient) ProxiedClient() (tls_client.HttpClient, error) {
+// ProxiedClient gives a given http client with a proxy if available
+func (t *TlsClient) ProxiedClient() tls_client.HttpClient {
 	if t.actor.ProxyConfiguration == nil {
-		return nil, errors.New("no proxy configuration given")
+		return t.HttpClient
 	}
 	proxyUrl, err := t.actor.ProxyConfiguration.Proxy()
 	if err != nil {
-		return nil, err
+		return nil
 	}
 	client := t.HttpClient
 
 	err = client.SetProxy(proxyUrl.String())
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	return client, nil
+	return client
 }
