@@ -1,6 +1,9 @@
 package goapifytls
 
 import (
+	"io"
+
+	http "github.com/bogdanfinn/fhttp"
 	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/bogdanfinn/tls-client/profiles"
 	"github.com/data-harvesters/goapify"
@@ -29,6 +32,10 @@ func DefaultOptions() []tls_client.HttpClientOption {
 		tls_client.WithClientProfile(profiles.Chrome_124),
 		tls_client.WithNotFollowRedirects(),
 	}
+}
+
+func (t *TlsClient) NewRequest(method, url string, body io.Reader) (*http.Request, error) {
+	return http.NewRequestWithContext(t.actor.Context(), method, url, body)
 }
 
 // ProxiedClient gives a given http client with a proxy if available
